@@ -1,0 +1,9 @@
+per deployare:
+
+bundle exec middleman build --clean
+
+andare nella directory build, spostare tutte le folder (fonts, stylesheets, ...)
+e spostarle dentro ad un folder "slate", mantenendo i riferimenti nell'html di build/index.html
+poi rinominare index.html in developers.html e copiare build/developers.html e builds/slate in bigprofiles/public
+
+:)
