@@ -14,13 +14,13 @@ search: true
 
 Welcome to the BigProfiles API! You can use this API to access our profiling technology.
 
-Thanks to this API, you can profile individuals, but keep in mind that BigProfiles is thought to perform on mass profiling.
+Thanks to this API, you can profile individuals, but keep in mind that BigProfiles is thought to perform on mass profiling. BigProfiles only works on Italian persons for now.
 
 The API request takes as input information (in various formats) about name, residence address, age, gender, tax ID and email address.
 
 The API response outputs a set of information about residence, owned companies, marital status, education level, professional status, housing, interests and income.
 
-We have language bindings in Shell (more coming soon)! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.
+We have language bindings in Shell (more coming soon)! You can view code examples in the dark area to the right.
 
 # Authentication
 
@@ -51,10 +51,10 @@ You must replace <code>yourAPIkey</code> with your personal API key.
 > Request example:
 
 ```shell
-curl "https://api.bigprofiles.it/v1/profile?"+
+curl "https://api.bigprofiles.it/v1/profiling?"+
   "full_name=Lorenzo%20Luce&"+
   "italian_tax_id=LCULNZ92B03H501Y&"+
-  "full_address=Via%20Costantino%2025,%20Roma&"+
+  "full_address=Via%20Costantino%2073,%20Roma&"+
   "email=lorenzo.luce@yahoo.it"
   -H "x-api-key: yourAPIkey"
 ```
@@ -62,11 +62,12 @@ curl "https://api.bigprofiles.it/v1/profile?"+
 > Another request example:
 
 ```shell
-curl "https://api.bigprofiles.it/v1/profile?"+
-  "full_name=Lorenzo%20Luce&"+
+curl "https://api.bigprofiles.it/v1/profiling?"+
+  "given_name=Lorenzo&"+
+  "family_name=Luce&"+
   "gender=m&"+
   "birth_date=1992-02-03&"+
-  "full_address=Via%20Costantino%2025,%20Roma&"+
+  "city=Roma&"+
   "email=lorenzo.luce@yahoo.it"
   -H "x-api-key: yourAPIkey"
 ```
@@ -75,7 +76,7 @@ The `Profiling` endpoint profiles an individual starting from basic information 
 
 ### HTTP Request
 
-`GET http://api.bigprofiles.it/v1/profile`
+`GET http://api.bigprofiles.it/v1/profiling`
 
 ### Query Parameters
 
@@ -83,24 +84,23 @@ Accepted parameters are the following:
 
 Parameter | Type | Example | Description
 --------- | ------- | ------- | -----------
-full_name | Name | Valerio De Blando | Full name (full text)
-given_name | Name | Valerio | Given name (full text)
-family_name | Name | De Blando | Family name (full text)
+full_name | Name | Lorenzo Luce | Full name (full text, must be name followed by family name)
+given_name | Name | Lorenzo | Given name (full text)
+family_name | Name | Luce | Family name (full text)
 gender | Name | m | Gender (one letter, m for male, f for female)
-birth_date | Birth | 1993-10-02 | Birth date (YYYY-MM-DD)
-birth_year | Birth | 1993 | Birth year (YYYY)
-age | Birth | 24 | Age (numbers)
+birth_date | Birth | 1992-02-03 | Birth date (YYYY-MM-DD)
+birth_year | Birth | 1992 | Birth year (YYYY)
+age | Birth | 26 | Age (numbers)
 italian_tax_id | Birth | LCULNZ92B03H501Y | Italian tax ID code
-full_address | Location | Via Costantino 73L, Roma | Residence address (full text)
+full_address | Location | Via Costantino 73, Roma | Residence address (full text, must contain street and city)
 postal_code | Location | 00145 | Residence postal code (five numbers)
 street | Location | Via Costantino | Residence street name (full text)
 house_number | Location | 73 | Residence house number (numbers)
 province | Location | RM | Residence province code (two letters)
 city | Location | Roma | Residence city (full text)
-latitude | Location | 41.8572957 | Residence latitude (latitude coordinates)
-longitude | Location | 12.4844907 | Residence longitude (longitude coordinates)
-email | Contact | valerio@deblando.it | Email address
-telephone | Contact | +393385434562 | Phone number (with country code)
+latitude | Location | 41.857289 | Residence latitude (latitude coordinates)
+longitude | Location | 12.484547 | Residence longitude (longitude coordinates)
+email | Contact | lorenzo.luce@yahoo.it | Email address
 
 <aside class="success">
 Remember — not all the parameters are required, and some of them are equivalent!
@@ -125,13 +125,13 @@ param1 AND param2
 
 > This means that `param1` and `param2` must be used together.
 
-Some parameters must not be used together, because they are equivalent.
-Here you have a list of equivalent parameters:
+Some parameters must not be used together, because they are equivalent. Even if some parameters are equivalent (e.g. `birth_date` and `age`) some of them are more specific and therefore more effective in profiling. For example, the `birth_date` is more specific than the `age`.
+Here you have a list of equivalent parameters, in order of effectiveness:
 
 - Name Parameters: `full_name` OR (`given_name` AND `family_name`) AND/OR `gender`
-- Birth Parameters: `birth_date` OR `birth_year` OR `age` OR `italian_tax_id`
-- Location Parameters: `full_address` OR (`latitude` AND `longitude`) OR (`province` AND/OR `city` AND/OR `postal_code` AND/OR `street` AND/OR `house_number`)
-- Contact Parameters: `email` OR `telephone`
+- Birth Parameters: `italian_tax_id` OR `birth_date` OR `birth_year` OR `age`
+- Location Parameters: `full_address` OR (`latitude` AND `longitude`) OR (`province` AND `city` AND `postal_code` AND `street` AND `house_number`) OR `postal_code` OR `city`
+- Contact Parameters: `email`
 
 ### Required Parameters
 
@@ -147,7 +147,7 @@ Required parameters are:
 > An example of an anonymous profiling request:
 
 ```shell
-curl "https://api.bigprofiles.it/v1/profile?"+
+curl "https://api.bigprofiles.it/v1/profiling?"+
   "gender=m&"+
   "birth_date=1992-02-03&"+
   "full_address=Via%20Costantino%2025,%20Roma&"+
@@ -161,6 +161,45 @@ In fact, many use cases benefits of this feature, manly for two reasons:
 - an anonymous input (i.e. anonymous visits)
 
 This type of profiling works very well both in Analytics and Predictions; the greater is the number of anonymous profiling, the better its performance will be.
+Typical parameters for an anonymous profiling are:
+
+- `gender`
+- `birth_date` or any other other Birth parameter except `italian_tax_id`
+- `full_address` or any other other Location parameter
+
+### Effective Requests
+
+> Examples of effective requests:
+
+```shell
+curl "https://api.bigprofiles.it/v1/profiling?"+
+  "full_name=Lorenzo%20Luce&"+
+  "italian_tax_id=LCULNZ92B03H501Y&"+
+  "full_address=Via%20Costantino%2073,%20Roma&"+
+  "email=lorenzo.luce@yahoo.it"
+  -H "x-api-key: yourAPIkey"
+```
+
+> Another effective request example:
+
+```shell
+curl "https://api.bigprofiles.it/v1/profiling?"+
+  "given_name=Lorenzo&"+
+  "family_name=Luce&"+
+  "gender=m&"+
+  "birth_date=1992-02-03&"+
+  "full_address=Via%20Costantino%2073,%20Roma&"+
+  "email=lorenzo.luce@yahoo.it"
+  -H "x-api-key: yourAPIkey"
+```
+
+A request is effective when it contains effective parameters. For examples, effective requests contain:
+
+- `full_name`, `italian_tax_id`, `full_address` and `email`
+
+or
+
+- `given_name`, `family_name`, `gender`, `birth_date`, `full_address` and `email`
 
 ## Response
 
@@ -184,13 +223,13 @@ Main packages are: BASE, COMPANIES, MARITAL_STATUS, EDUCATION, WORK, HOUSING, IN
       "GENDER":"Male",
       "RESIDENCE": {
         "GEO": {
-          "LATITUDE":"41.90644",
-          "LONGITUDE":"12.446946"
+          "LATITUDE":"41.857289",
+          "LONGITUDE":"12.484547"
         },
-        "LABEL":"ROMA",
-        "POPULATION":">250000",
-        "REGION":"LAZ",
-        "ZONE":"Centro",
+        "LABEL":"Roma",
+        "POPULATION":"Metropolis",
+        "REGION":"Lazio",
+        "ZONE":"Center",
         "STATE":"Italy"
       }
     },
@@ -200,14 +239,14 @@ The first one is BASE. It contains all the basic information about the individua
 
 Parameter | Example | Description
 --------- | ------- | -----------
-BASE / AGE_GROUP | 18-24 | Age group (Under18, 18-24, 25-29, 30-39, 40-49, 50-59, 60-69, 70-75, Over 75)
+BASE / AGE_GROUP | 18-24 | Age group (Under18, 18-24, 25-29, 30-34, 35-39, 40-44, 45-49, 50-54, 55-59, 60-64, 65-69, 70-74, Over75)
 BASE / GENDER | Male | Gender (Male, Female)
 BASE / RESIDENCE / GEO / LATITUDE | 41.90644 | Residence latitude
 BASE / RESIDENCE / GEO / LONGITUDE | 12.446946 | Residence longitude
-BASE / RESIDENCE / LABEL | ROMA | Residence city
-BASE / RESIDENCE / POPULATION | >250000 | Residence city population (<5000, 5000-25000, 25000-100000, 100000-250000, >250000)
-BASE / RESIDENCE / REGION | LAZ | Residence region
-BASE / RESIDENCE / ZONE | Centro | Residence country zone
+BASE / RESIDENCE / LABEL | Roma | Residence city
+BASE / RESIDENCE / POPULATION | Metropolis | Residence city population (Small Village, Village, Town, Large Town, City, Large City, Metropolis)
+BASE / RESIDENCE / REGION | Lazio | Residence region
+BASE / RESIDENCE / ZONE | Center | Residence country zone (North, North-West, North-East, South, South-West, South-East, West, East, Center, Islands)
 BASE / RESIDENCE / STATE | Italy | Residence country
 
 <aside class="notice">
@@ -267,13 +306,13 @@ COMPANIES fields are useful in Analytics!
 
 ```json
     "MARITAL_STATUS": {
-      "STATUS":"SINGLE",
+      "STATUS":"Single",
       "SCORE": {
-        "SINGLE":"0.935844731636",
-        "MARRIED":"0.049271701253",
-        "SEPARATE":"0.007437498450",
-        "WIDOWER":"0.007303158157",
-        "DIVORCED":"0.000142910504"
+        "SINGLE":"0.839216495635",
+        "MARRIED":"0.132142607266",
+        "SEPARATE":"0.004434673863",
+        "WIDOWER":"0.000415337626",
+        "DIVORCED":"0.023790885610"
       }
     },
 ```
@@ -282,12 +321,12 @@ The fourth main package is MARITAL_STATUS. It contains information about the mar
 
 Parameter | Example | Description
 --------- | ------- | -----------
-MARITAL_STATUS / STATUS | SINGLE | Estimated marital status
-MARITAL_STATUS / SCORE / SINGLE | 0.935844731636 | Score of the single status (0-1)
-MARITAL_STATUS / SCORE / MARRIED | 0.049271701253 | Score of the married status (0-1)
-MARITAL_STATUS / SCORE / SEPARATE | 0.007437498450 | Score of the separate status (0-1)
-MARITAL_STATUS / SCORE / WIDOWER | 0.007303158157 | Score of the widower status (0-1)
-MARITAL_STATUS / SCORE / DIVORCED | 0.000142910504 | Score of the divorced status (0-1)
+MARITAL_STATUS / STATUS | Single | Estimated marital status
+MARITAL_STATUS / SCORE / SINGLE | 0.839216495635 | Score of the single status (0-1)
+MARITAL_STATUS / SCORE / MARRIED | 0.132142607266 | Score of the married status (0-1)
+MARITAL_STATUS / SCORE / SEPARATE | 0.004434673863 | Score of the separate status (0-1)
+MARITAL_STATUS / SCORE / WIDOWER | 0.000415337626 | Score of the widower status (0-1)
+MARITAL_STATUS / SCORE / DIVORCED | 0.023790885610 | Score of the divorced status (0-1)
 
 <aside class="notice">
 MARITAL_STATUS/STATUS is useful in Analytics, while MARITAL_STATUS/SCORE works well in Predictions!
@@ -297,15 +336,15 @@ MARITAL_STATUS/STATUS is useful in Analytics, while MARITAL_STATUS/SCORE works w
 
 ```json
     "EDUCATION": {
-      "STATUS":"UNIVERSITY",
-      "LAST_DEGREE":"Master of Engineering (MEng) @ Università degli Studi di Roma Tre",
+      "STATUS":"University",
+      "LAST_DEGREE":"Master of engineering (meng), computer science, 110 e lode from università degli studi di roma tre (2013-2015)",
       "SCORE": {
-        "UNIVERSITY":"0.729302930544",
-        "HIGH_SCHOOL":"0.166297254561",
-        "SECONDARY_SCHOOL":"0.087812357777",
-        "PRIMARY_SCHOOL":"0.004662618321",
-        "LITERATE":"0.005274161333",
-        "ILLITERATE":"0.006650677465"
+        "UNIVERSITY":"0.353643381916",
+        "HIGH_SCHOOL":"0.501605071365",
+        "SECONDARY_SCHOOL":"0.126197503380",
+        "PRIMARY_SCHOOL":"0.010026412322",
+        "LITERATE":"0.004269084660",
+        "ILLITERATE":"0.004258546357"
       }
     },
 ```
@@ -314,14 +353,14 @@ The fifth main package is EDUCATION. It contains information about the education
 
 Parameter | Example | Description
 --------- | ------- | -----------
-EDUCATION / STATUS | HIGH_SCHOOL | Estimated highest education level reached
-EDUCATION / LAST_DEGREE | Master Degree @ Columbia University | Last education degree owned
-EDUCATION / SCORE / UNIVERSITY | 0.087812357777 | Score of the university education level (0-1)
-EDUCATION / SCORE / HIGH_SCHOOL | 0.729302930544 | Score of the high school education level (0-1)
-EDUCATION / SCORE / SECONDARY_SCHOOL | 0.166297254561 | Score of the university education level (0-1)
-EDUCATION / SCORE / PRIMARY_SCHOOL | 0.004662618321 | Score of the university education level (0-1)
-EDUCATION / SCORE / LITERATE | 0.005274161333 | Score of the university education level (0-1)
-EDUCATION / SCORE / ILLITERATE | 0.006650677465 | Score of the university education level (0-1)
+EDUCATION / STATUS | University | Estimated highest education level reached
+EDUCATION / LAST_DEGREE | Master of engineering (meng), computer science, 110 e lode from università degli studi di roma tre (2013-2015) | Last education degree owned
+EDUCATION / SCORE / UNIVERSITY | 0.353643381916 | Score of the university education level (0-1)
+EDUCATION / SCORE / HIGH_SCHOOL | 0.501605071365 | Score of the high school education level (0-1)
+EDUCATION / SCORE / SECONDARY_SCHOOL | 0.126197503380 | Score of the university education level (0-1)
+EDUCATION / SCORE / PRIMARY_SCHOOL | 0.010026412322 | Score of the university education level (0-1)
+EDUCATION / SCORE / LITERATE | 0.004269084660 | Score of the university education level (0-1)
+EDUCATION / SCORE / ILLITERATE | 0.004258546357 | Score of the university education level (0-1)
 
 <aside class="notice">
 EDUCATION/STATUS and EDUCATION/LAST_DEGREE are useful in Analytics, while EDUCATION/SCORE works well in Predictions!
@@ -331,14 +370,14 @@ EDUCATION/STATUS and EDUCATION/LAST_DEGREE are useful in Analytics, while EDUCAT
 
 ```json
     "WORK": {
-      "STATUS":"EMPLOYED",
-      "LAST_JOB_TITLE":"CEO @ BigProfiles",
+      "STATUS":"Employed",
+      "LAST_JOB_TITLE":"Ceo at bigprofiles (since 2016)",
       "SCORE": {
-        "EMPLOYED":"0.349942125092",
-        "UNEMPLOYED":"0.262991244281",
-        "STUDENT":"0.271371482560",
-        "RETIRED":"0.005355782471",
-        "OTHER":"0.110339365597"
+        "EMPLOYED":"0.640475729596",
+        "UNEMPLOYED":"0.149551381939",
+        "STUDENT":"0.134282640831",
+        "OTHER":"0.070752590535",
+        "RETIRED":"0.004937657099"
       }
     },
 ```
@@ -347,13 +386,13 @@ The sixth main package is WORK. It contains information about the work of the in
 
 Parameter | Example | Description
 --------- | ------- | -----------
-WORK / STATUS | UNEMPLOYED | Estimated work status
-WORK / LAST_JOB_TITLE | CFO @ Microsoft | Last job title owned
-WORK / SCORE / EMPLOYED | 0.349942125092 | Score of the employed status (0-1)
-WORK / SCORE / UNEMPLOYED | 0.262991244281 | Score of the unemployed status (0-1)
-WORK / SCORE / STUDENT | 0.271371482560 | Score of the student status (0-1)
-WORK / SCORE / OTHER | 0.110339365597 | Score of other status (0-1)
-WORK / SCORE / RETIRED | 0.005355782471 | Score of the retired status (0-1)
+WORK / STATUS | Employed | Estimated work status
+WORK / LAST_JOB_TITLE | Ceo at bigprofiles (since 2016) | Last job title owned
+WORK / SCORE / EMPLOYED | 0.640475729596 | Score of the employed status (0-1)
+WORK / SCORE / UNEMPLOYED | 0.149551381939 | Score of the unemployed status (0-1)
+WORK / SCORE / STUDENT | 0.134282640831 | Score of the student status (0-1)
+WORK / SCORE / OTHER | 0.070752590535 | Score of other status (0-1)
+WORK / SCORE / RETIRED | 0.004937657099 | Score of the retired status (0-1)
 
 <aside class="notice">
 WORK/STATUS and WORK/LAST_JOB_TITLE are useful in Analytics, while WORK/SCORE works well in Predictions!
@@ -363,12 +402,12 @@ WORK/STATUS and WORK/LAST_JOB_TITLE are useful in Analytics, while WORK/SCORE wo
 
 ```json
     "HOUSING": {
-      "STATUS":"FAMILY_OWNED",
-      "SLOT":"Quartiere Urbano",
+      "STATUS":"Family_owned",
+      "SLOT":"Urban_area",
       "SCORE": {
-        "FAMILY_RENTAL":"0.177777777778",
-        "FAMILY_OWNED":"0.703703703704",
-        "OTHER":"0.118518518519"
+        "FAMILY_RENTAL":"0.064102564103",
+        "FAMILY_OWNED":"0.867521367521",
+        "FAMILY_OTHER":"0.068376068376"
       }
     },
 ```
@@ -377,11 +416,11 @@ The seventh main package is HOUSING. It contains information about the housing o
 
 Parameter | Example | Description
 --------- | ------- | -----------
-HOUSING / STATUS | FAMILY_OWNED | Estimated housing status
-HOUSING / SLOT | Quartiere Urbano | House slot type
-HOUSING / SCORE / FAMILY_RENTAL | 0.177777777778 | Score of the family rental status (0-1)
-HOUSING / SCORE / FAMILY_OWNED | 0.703703703704 | Score of the family owned status (0-1)
-HOUSING / SCORE / FAMILY_OTHER | 0.118518518519 | Score of other status (0-1)
+HOUSING / STATUS | Family_owned | Estimated housing status
+HOUSING / SLOT | Urban_area | House slot type (City_Centre, Urban_Area, Urban_Periphery, Suburban_Area, Rural_Area)
+HOUSING / SCORE / FAMILY_RENTAL | 0.064102564103 | Score of the family rental status (0-1)
+HOUSING / SCORE / FAMILY_OWNED | 0.867521367521 | Score of the family owned status (0-1)
+HOUSING / SCORE / FAMILY_OTHER | 0.068376068376 | Score of other status (0-1)
 
 <aside class="notice">
 HOUSING/STATUS and HOUSING/SLOT are useful in Analytics, while HOUSING/SCORE works well in Predictions!
@@ -391,7 +430,7 @@ HOUSING/STATUS and HOUSING/SLOT are useful in Analytics, while HOUSING/SCORE wor
 
 ```json
     "INCOME": {
-      "SCORE":"53"
+      "SCORE":"100"
     },
 ```
 
@@ -409,7 +448,7 @@ INCOME fields are pretty useful both in Analytics and Predictions!
 
 ```json
     "WEB_&_SOCIALS": {
-      "LINKS": "[\"https://www.linkedin.com/in/lorenzoluce/\", \"https://www.facebook.com/lorenzo.luce\"]"
+      "LINKS":"[https://www.linkedin.com/in/lorenzoluce, http://klout.com/lorenzo_luce, https://plus.google.com/117573211250926821710/about, https://twitter.com/lorenzo_luce, http://www.linkedin.com/in/lorenzoluce, http://www.alfredata.com, https://github.com/lorenzoluce]"
     },
 ```
 
@@ -422,29 +461,28 @@ WEB_&_SOCIALS / LINKS | ["http://facebook.com/38596", "www.personalwebsite.com"]
 ### INTERESTS package
 
 ```json
-    "INTERESTS": {
-      "ANIMALS_&_PETS":"0",
-      "ART_&_CULTURE":"72",
-      "BEAUTY_COSMETIC_&_PERSONAL_CARE":"0",
-      "BOOKS":"23",
-      "BUSINESS_&_FINANCE":"0",
-      "CHARITY_&_NON_PROFIT":"0",
-      "EDUCATION":"16",
-      "ENTERTAINMENT_&_NIGHTLIFE":"93",
-      "FOOD_&_COOKING":"79",
-      "HOME_&_FAMILY":"0",
-      "MEDICAL_&_HEALTH":"0",
-      "MUSIC":"58",
-      "NEWS":"86",
-      "POLITICS":"0",
-      "RELIGION":"0",
-      "SCIENCE_TECHNOLOGY_&_ENGINEERING":"0",
-      "SHOPPING_&_FASHION":"44",
-      "SPORTS":"100",
-      "TRAVEL":"0",
-      "TV_&_MOVIES":"51",
-      "VIP_&_GOSSIP":"30"
-    }
+  "INTERESTS": {
+    "ANIMALS_&_PETS":"0",
+    "ART_&_CULTURE":"64",
+    "BEAUTY_COSMETIC_&_PERSONAL_CARE":"0",
+    "BOOKS":"82",
+    "BUSINESS_&_FINANCE":"0",
+    "CHARITY_&_NON_PROFIT":"0",
+    "EDUCATION":"0",
+    "ENTERTAINMENT_&_NIGHTLIFE":"100",
+    "FOOD_&_COOKING":"46",
+    "HOME_&_FAMILY":"0",
+    "MEDICAL_&_HEALTH":"16",
+    "MUSIC":"70",
+    "NEWS":"40",
+    "POLITICS":"0",
+    "RELIGION":"28",
+    "SCIENCE_TECHNOLOGY_&_ENGINEERING":"52",
+    "SHOPPING_&_FASHION":"22",
+    "SPORTS":"94",
+    "TRAVEL":"88",
+    "TV_&_MOVIES":"34",
+    "VIP_&_GOSSIP":"58"
   }
 }
 // response end
@@ -483,10 +521,11 @@ INTERESTS fields are pretty useful both in Analytics and Predictions!
 # Request/Response Complete Example
 
 ```shell
-curl "https://api.bigprofiles.it/v1/profile?"+
+curl "https://api.bigprofiles.it/v1/profiling?"+
   "full_name=Lorenzo%20Luce&"+
-  "italian_tax_id=LCULNZ92B03H501Y&"+
-  "full_address=Via%20Costantino%2025,%20Roma&"+
+  "gender=m&"+
+  "birth_date=1992-02-03&"+
+  "full_address=Via%20Costantino%2073,%2000145%20Roma&"+
   "email=lorenzo.luce@yahoo.it"
   -H "x-api-key: yourAPIkey"
 ```
@@ -496,17 +535,17 @@ curl "https://api.bigprofiles.it/v1/profile?"+
   "statusCode":"200",
   "message": {
     "BASE": {
-      "AGE_GROUP":"18-24",
+      "AGE_GROUP":"25-29",
       "GENDER":"Male",
       "RESIDENCE": {
         "GEO": {
-          "LATITUDE":"41.90644",
-          "LONGITUDE":"12.446946"
+          "LATITUDE":"41.857289",
+          "LONGITUDE":"12.484547"
         },
-        "LABEL":"ROMA",
-        "POPULATION":">250000",
-        "REGION":"LAZ",
-        "ZONE":"Centro",
+        "LABEL":"Roma",
+        "POPULATION":"Metropolis",
+        "REGION":"Lazio",
+        "ZONE":"Center",
         "STATE":"Italy"
       }
     },
@@ -523,8 +562,7 @@ curl "https://api.bigprofiles.it/v1/profile?"+
       },
       "SOCIETA_DI_CAPITALI": {
         "SOCIETA_PER_AZIONI":"0",
-        "SOCIETA_RESPONSABILITA_LIMITATA":"0"
-
+        "SOCIETA_RESPONSABILITA_LIMITATA":"1"
       },
       "ALTRE_FORME": {
         "ONLUS":"0",
@@ -534,75 +572,75 @@ curl "https://api.bigprofiles.it/v1/profile?"+
       "SOCIETA_IN_LIQUIDAZIONE":"0"
     },
     "MARITAL_STATUS": {
-      "STATUS":"SINGLE",
+      "STATUS":"Single",
       "SCORE": {
-        "SINGLE":"0.935844731636",
-        "MARRIED":"0.049271701253",
-        "SEPARATE":"0.007437498450",
-        "WIDOWER":"0.007303158157",
-        "DIVORCED":"0.000142910504"
+        "SINGLE":"0.839216495635",
+        "MARRIED":"0.132142607266",
+        "SEPARATE":"0.004434673863",
+        "WIDOWER":"0.000415337626",
+        "DIVORCED":"0.023790885610"
       }
     },
     "EDUCATION": {
-      "STATUS":"HIGH_SCHOOL",
-      "LAST_DEGREE":"?",
+      "STATUS":"University",
+      "LAST_DEGREE":"Master of engineering (meng), computer science, 110 e lode from università degli studi di roma tre (2013-2015)",
       "SCORE": {
-        "UNIVERSITY":"0.087812357777",
-        "HIGH_SCHOOL":"0.729302930544",
-        "SECONDARY_SCHOOL":"0.166297254561",
-        "PRIMARY_SCHOOL":"0.004662618321",
-        "LITERATE":"0.005274161333",
-        "ILLITERATE":"0.006650677465"
+        "UNIVERSITY":"0.353643381916",
+        "HIGH_SCHOOL":"0.501605071365",
+        "SECONDARY_SCHOOL":"0.126197503380",
+        "PRIMARY_SCHOOL":"0.010026412322",
+        "LITERATE":"0.004269084660",
+        "ILLITERATE":"0.004258546357"
       }
     },
     "WORK": {
-      "STATUS":"UNEMPLOYED",
-      "LAST_JOB_TITLE":"?",
+      "STATUS":"Employed",
+      "LAST_JOB_TITLE":"Ceo at bigprofiles (since 2016)",
       "SCORE": {
-        "EMPLOYED":"0.349942125092",
-        "UNEMPLOYED":"0.262991244281",
-        "STUDENT":"0.271371482560",
-        "RETIRED":"0.005355782471",
-        "OTHER":"0.110339365597"
+        "EMPLOYED":"0.640475729596",
+        "UNEMPLOYED":"0.149551381939",
+        "STUDENT":"0.134282640831",
+        "OTHER":"0.070752590535",
+        "RETIRED":"0.004937657099"
       }
     },
     "HOUSING": {
-      "STATUS":"FAMILY_OWNED",
-      "SLOT":"Quartiere Urbano",
+      "STATUS":"Family_owned",
+      "SLOT":"Urban_area",
       "SCORE": {
-        "FAMILY_RENTAL":"0.177777777778",
-        "FAMILY_OWNED":"0.703703703704",
-        "OTHER":"0.118518518519"
+        "FAMILY_RENTAL":"0.064102564103",
+        "FAMILY_OWNED":"0.867521367521",
+        "FAMILY_OTHER":"0.068376068376"
       }
     },
     "INCOME": {
       "SCORE":"100"
     },
     "WEB_&_SOCIALS": {
-      "LINKS": "?"
+      "LINKS":"[https://www.linkedin.com/in/lorenzoluce, http://klout.com/lorenzo_luce, https://plus.google.com/117573211250926821710/about, https://twitter.com/lorenzo_luce, http://www.linkedin.com/in/lorenzoluce, http://www.alfredata.com, https://github.com/lorenzoluce]"
     },
     "INTERESTS": {
       "ANIMALS_&_PETS":"0",
-      "ART_&_CULTURE":"72",
+      "ART_&_CULTURE":"64",
       "BEAUTY_COSMETIC_&_PERSONAL_CARE":"0",
-      "BOOKS":"23",
+      "BOOKS":"82",
       "BUSINESS_&_FINANCE":"0",
       "CHARITY_&_NON_PROFIT":"0",
-      "EDUCATION":"16",
-      "ENTERTAINMENT_&_NIGHTLIFE":"93",
-      "FOOD_&_COOKING":"79",
+      "EDUCATION":"0",
+      "ENTERTAINMENT_&_NIGHTLIFE":"100",
+      "FOOD_&_COOKING":"46",
       "HOME_&_FAMILY":"0",
-      "MEDICAL_&_HEALTH":"0",
-      "MUSIC":"58",
-      "NEWS":"86",
+      "MEDICAL_&_HEALTH":"16",
+      "MUSIC":"70",
+      "NEWS":"40",
       "POLITICS":"0",
-      "RELIGION":"0",
-      "SCIENCE_TECHNOLOGY_&_ENGINEERING":"0",
-      "SHOPPING_&_FASHION":"44",
-      "SPORTS":"100",
-      "TRAVEL":"0",
-      "TV_&_MOVIES":"51",
-      "VIP_&_GOSSIP":"30"
+      "RELIGION":"28",
+      "SCIENCE_TECHNOLOGY_&_ENGINEERING":"52",
+      "SHOPPING_&_FASHION":"22",
+      "SPORTS":"94",
+      "TRAVEL":"88",
+      "TV_&_MOVIES":"34",
+      "VIP_&_GOSSIP":"58"
     }
   }
 }
