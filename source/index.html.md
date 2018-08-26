@@ -51,24 +51,24 @@ You must replace <code>yourAPIkey</code> with your personal API key.
 > Request example:
 
 ```shell
-curl "https://api.bigprofiles.it/v1/profiling?"+
-  "full_name=Lorenzo%20Luce&"+
-  "italian_tax_id=LCULNZ92B03H501Y&"+
-  "full_address=Via%20Costantino%2073,%20Roma&"+
-  "email=lorenzo.luce@yahoo.it"
+curl -G "https://api.bigprofiles.it/v1/profiling" \
+  -d "full_name=Lorenzo%20Luce" \
+  -d "italian_tax_id=LCULNZ92B03H501Y" \
+  -d "full_address=Via%20Costantino%2073,%20Roma" \
+  -d "email=lorenzo.luce@yahoo.it" \
   -H "x-api-key: yourAPIkey"
 ```
 
 > Another request example:
 
 ```shell
-curl "https://api.bigprofiles.it/v1/profiling?"+
-  "given_name=Lorenzo&"+
-  "family_name=Luce&"+
-  "gender=m&"+
-  "birth_date=1992-02-03&"+
-  "city=Roma&"+
-  "email=lorenzo.luce@yahoo.it"
+curl -G "https://api.bigprofiles.it/v1/profiling" \
+  -d "given_name=Lorenzo" \
+  -d "family_name=Luce" \
+  -d "gender=m" \
+  -d "birth_date=1992-02-03" \
+  -d "city=Roma" \
+  -d "email=lorenzo.luce@yahoo.it" \
   -H "x-api-key: yourAPIkey"
 ```
 
@@ -147,10 +147,10 @@ Required parameters are:
 > An example of an anonymous profiling request:
 
 ```shell
-curl "https://api.bigprofiles.it/v1/profiling?"+
-  "gender=m&"+
-  "birth_date=1992-02-03&"+
-  "full_address=Via%20Costantino%2025,%20Roma&"+
+curl -G "https://api.bigprofiles.it/v1/profiling" \
+  -d "gender=m" \
+  -d "birth_date=1992-02-03" \
+  -d "full_address=Via%20Costantino%2073,%20Roma" \
   -H "x-api-key: yourAPIkey"
 ```
 
@@ -172,24 +172,24 @@ Typical parameters for an anonymous profiling are:
 > Examples of effective requests:
 
 ```shell
-curl "https://api.bigprofiles.it/v1/profiling?"+
-  "full_name=Lorenzo%20Luce&"+
-  "italian_tax_id=LCULNZ92B03H501Y&"+
-  "full_address=Via%20Costantino%2073,%20Roma&"+
-  "email=lorenzo.luce@yahoo.it"
+curl -G "https://api.bigprofiles.it/v1/profiling" \
+  -d "full_name=Lorenzo%20Luce" \
+  -d "italian_tax_id=LCULNZ92B03H501Y" \
+  -d "full_address=Via%20Costantino%2073,%20Roma" \
+  -d "email=lorenzo.luce@yahoo.it" \
   -H "x-api-key: yourAPIkey"
 ```
 
 > Another effective request example:
 
 ```shell
-curl "https://api.bigprofiles.it/v1/profiling?"+
-  "given_name=Lorenzo&"+
-  "family_name=Luce&"+
-  "gender=m&"+
-  "birth_date=1992-02-03&"+
-  "full_address=Via%20Costantino%2073,%20Roma&"+
-  "email=lorenzo.luce@yahoo.it"
+curl -G "https://api.bigprofiles.it/v1/profiling" \
+  -d "given_name=Lorenzo" \
+  -d "family_name=Luce" \
+  -d "gender=m" \
+  -d "birth_date=1992-02-03" \
+  -d "full_address=Via%20Costantino%2073,%20Roma" \
+  -d "email=lorenzo.luce@yahoo.it" \
   -H "x-api-key: yourAPIkey"
 ```
 
@@ -521,12 +521,12 @@ INTERESTS fields are pretty useful both in Analytics and Predictions!
 # Request/Response Complete Example
 
 ```shell
-curl "https://api.bigprofiles.it/v1/profiling?"+
-  "full_name=Lorenzo%20Luce&"+
-  "gender=m&"+
-  "birth_date=1992-02-03&"+
-  "full_address=Via%20Costantino%2073,%2000145%20Roma&"+
-  "email=lorenzo.luce@yahoo.it"
+curl -G "https://api.bigprofiles.it/v1/profiling" \
+  -d "full_name=Lorenzo%20Luce" \
+  -d "gender=m" \
+  -d "birth_date=1992-02-03" \
+  -d "full_address=Via%20Costantino%2073,%2000145%20Roma" \
+  -d "email=lorenzo.luce@yahoo.it" \
   -H "x-api-key: yourAPIkey"
 ```
 
